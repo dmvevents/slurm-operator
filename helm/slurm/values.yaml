@@ -279,16 +279,16 @@ controller:
     #
     # -- (string)
     # Create a `PersistentVolumeClaim` with this storage class.
-    storageClass: standard
+    storageClass: "fsx-sc"
     #
     # -- (list)
     # Create a `PersistentVolumeClaim` with these access modes.
     accessModes:
-      - ReadWriteOnce
+      - ReadWriteMany
     #
     # -- (string)
     # Create a `PersistentVolumeClaim` with this storage size.
-    size: 4Gi
+    size: 1200Gi
     #
     # -- (object)
     # Selector to match an existing `PersistentVolume`.
@@ -458,7 +458,7 @@ compute:
         # Ref: https://slurm.schedmd.com/slurm.conf.html#lbAI
         config: >-
           State=UP
-          MaxTime=UNLIMITED
+          MaxTime=INFINITE
       #
       # -- (string)
       # Set Slurm node GRES.
@@ -579,12 +579,12 @@ mariadb:
     persistence:
       enabled: false
       existingClaim: ""
-      storageClass: standard
+      storageClass: "gp2"
       labels: {}
       annotations: {}
       accessModes:
         - ReadWriteOnce
-      size: 8Gi
+      size: 10Gi
       selector: {}
     priorityClassName: ""
   metrics:
