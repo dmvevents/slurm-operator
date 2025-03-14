@@ -40,16 +40,34 @@ func NewNodeSetPod(nodeset *slinkyv1alpha1.NodeSet, ordinal int, revisionHash st
 	return pod
 }
 
+// func initIdentity(nodeset *slinkyv1alpha1.NodeSet, pod *corev1.Pod) {
+// 	UpdateIdentity(nodeset, pod)
+// 	// Set these immutable fields only on initial Pod creation, not updates.
+// 	if pod.Spec.Hostname != "" {
+// 		pod.Spec.Hostname = fmt.Sprintf("%s%d", pod.Spec.Hostname, GetOrdinal(pod))
+// 	} else {
+// 		pod.Spec.Hostname = pod.Name
+// 	}
+// 	pod.Spec.Subdomain = nodeset.Spec.ServiceName
+// }
+
+
+// Ensure we don't use FQDN for nodeName as setting it as the hostName is not supported yet.
+func getSafeNodeName(nodeName string) string {
+  return strings.ReplaceAll(nodeName, ".", "-")
+}
+
 func initIdentity(nodeset *slinkyv1alpha1.NodeSet, pod *corev1.Pod) {
 	UpdateIdentity(nodeset, pod)
 	// Set these immutable fields only on initial Pod creation, not updates.
 	if pod.Spec.Hostname != "" {
-		pod.Spec.Hostname = fmt.Sprintf("%s%d", pod.Spec.Hostname, GetOrdinal(pod))
+		pod.Spec.Hostname = getSafeNodeName(fmt.Sprintf("%s%d", pod.Spec.Hostname, GetOrdinal(pod)))
 	} else {
-		pod.Spec.Hostname = pod.Name
+		pod.Spec.Hostname = getSafeNodeName(pod.Name)
 	}
 	pod.Spec.Subdomain = nodeset.Spec.ServiceName
 }
+
 
 // UpdateIdentity updates pod's name, hostname, and subdomain, and StatefulSetPodNameLabel to conform to nodeset's name
 // and headless service.
